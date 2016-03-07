@@ -1,7 +1,7 @@
 import csv
 import random
 
-for i in range(1,8):
+for i in range(1,10):
     store_number = 'store%d.csv' % i
     with open('items.csv','r') as csvinput:
         with open(store_number, 'w') as csvoutput: # this section of code creates random prices for all items in the item database and creates a new file with these values for each store
@@ -36,14 +36,12 @@ ingredientslist = []
 for key in recipeingredients:
     ingredientslist.append(key)  # makes a list of JUST the ingredients needed for each recipe
 
-print(ingredientslist)
-
 shopprices = {}
 where_to_get_item = {} # declaring dictionaries and a list
 shops_to_visit = []
 
 for ingredients in ingredientslist:
-    for i in range(1,8):
+    for i in range(1,10):
         store_number = 'store%d.csv' % i
         with open(store_number, 'r') as csvinput:
             reader = csv.reader(csvinput)
@@ -59,8 +57,7 @@ for ingredients in ingredientslist:
     if cheapeststore not in shops_to_visit:
         shops_to_visit.append(cheapeststore) # this list tells the program which stores it needs to visit, hence ignoring unneeded stores
 
-print(where_to_get_item)   
-print(shops_to_visit)
+
 
 
 
