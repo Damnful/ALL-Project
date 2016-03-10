@@ -1,40 +1,42 @@
 items,weight,quantity,price
-butter, 200, 1,1.32
-sugar, 200, 1,2.26
-egg, 0, 8,1.21
-lemon, 0, 1,1.41
-self-raising flour, 200, 1,4.47
-chicken, 900, 1,0.94
-strawberry, 300, 1,3.21
-potatoes, 500, 1,3.36
-garlic cloves, 0, 3,4.64
-bacon, 200, 1,1.9
-pasta, 200, 1,4.31
-cheese, 40, 1,1.94
-carrot, 100, 1,4.15
-mince, 500, 1,3.44
-onion, 0, 1,2.53
-milk, 500, 1,4.04
-jam, 150, 1,2.26
-icing sugar, 100, 1,4.9
-oil, 50, 1,1.66
-chopped tomatoes, 200, 1,1.75
-plain flour, 200, 1,2.62
-lasagne sheets, 300, 1,2.23
-sweetcorn, 100, 1,4.7
-peas, 100, 1,2.05
-tuna, 150, 1,2.88
-lamb mince, 500, 1,0.75
-beef stock, 400, 1,3.58
+butter, 200, 1,4.88
+sugar, 200, 1,2.45
+egg, 0, 8,4.33
+lemon, 0, 1,3.19
+self-raising flour, 200, 1,2.71
+chicken, 900, 1,1.79
+strawberry, 300, 1,2.74
+potatoes, 500, 1,3.84
+garlic cloves, 0, 3,1.03
+bacon, 200, 1,2.78
+pasta, 200, 1,2.59
+cheese, 40, 1,1.63
+carrot, 100, 1,1.72
+mince, 500, 1,3.54
+onion, 0, 1,4.13
+milk, 500, 1,0.8
+jam, 150, 1,3.96
+icing sugar, 100, 1,3.31
+oil, 50, 1,4.53
+chopped tomatoes, 200, 1,2.98
+plain flour, 200, 1,2.46
+lasagne sheets, 300, 1,1.24
+sweetcorn, 100, 1,3.88
+peas, 100, 1,1.71
+tuna, 150, 1,4.21
+lamb mince, 500, 1,3.67
+beef stock, 400, 1,0.52
 red chillies, 0, 2,4.45
-kidney beans, 400, 1,4.47
-lime, 0, 1,0.94
-red pepper, 0, 1,4.02
-white flour, 200, 1,4.13
-mozzarella, 100, 1,0.53
-yeast, 50, 1,3.29
-water, 200, 1,1.17
-passata, 100, 1,3.92
-pepperoni, 200, 1,0.82
-yogurt, 100, 1,1.38
-root ginger, 20, 1,2.11
+kidney beans, 400, 1,1.78
+lime, 0, 1,0.82
+red pepper, 0, 1,0.71
+white flour, 200, 1,1.29
+mozzarella, 100, 1,1.32
+yeast, 50, 1,4.69
+water, 200, 1,0.52
+passata, 100, 1,2.05
+pepperoni, 200, 1,0.83
+yogurt, 100, 1,4.44
+root ginger, 20, 1,3.63
+honey, 25, 1,1.72
+rice, 200, 1,3.47

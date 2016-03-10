@@ -2,6 +2,8 @@ import pygame, sys, pygame.mixer, pygame as pg
 import pygbutton
 import random
 import csv
+import time
+
 from pygame.locals import *
 
 #initalise pygame
@@ -22,6 +24,135 @@ firstimage = pygame.image.load("firstimage.jpg")
 firstimage = pygame.transform.scale(firstimage, (300,300))
 secondimage = pygame.image.load("secondimage.jpg")
 secondimage = pygame.transform.scale(secondimage, (300,300))
+
+import heapq
+from sys import stdin, stdout
+ 
+def dijkstra(adj, source, target, nodeOrder):
+    INF = ((1<<63) - 1)//2
+    pred = { x:x for x in adj }
+    dist = { x:INF for x in adj }
+    dist[ source ] = 0
+    PQ = []
+    heapq.heappush(PQ, [dist[ source ], source])
+ 
+    while(PQ):
+        u = heapq.heappop(PQ)  # u is a tuple [u_dist, u_id]
+        u_dist = u[0]
+        u_id = u[1]
+        if u_dist == dist[u_id]:
+
+            for v in adj[u_id]:
+               v_id = v[0]
+               w_uv = v[1]
+               if dist[u_id] +  w_uv < dist[v_id]:
+                   dist[v_id] = dist[u_id] + w_uv
+                   heapq.heappush(PQ, [dist[v_id], v_id])
+                   pred[v_id] = u_id
+    else:
+        st = []
+        node = target
+        while(True):
+            st.append(str(node))
+            if(node==pred[node]):
+                break
+            node = pred[node]
+        path = st[::-1]
+        for i in path:
+            nodeOrder.append(i)
+ 
+def main(shopsToVisit, whereToGetItem, recipe, ingredientsList, recipeIngredients):
+     
+    adj = {'startnode': [('store4', 1), ('store7', 12), ('store9', 10), ('store11', 8)],
+            'store1': [('store5', 17), ('store6', 18), ('store3',14), ('store8',8)],
+            'store2': [('store7', 6), ('store9', 8), ('store10', 6)],
+            'store3': [('store9', 12), ('store5', 12), ('store6', 13), ('store1', 14)],
+            'store4': [('startnode', 1)],
+            'store5': [('store1', 17), ('store3', 12), ('store9', 9), ('store6', 16), ('store8', 15), ('store11', 3)],
+            'store6': [('store1', 18), ('store3', 13), ('store5', 16), ('store8', 16), ('store9', 16)],
+            'store7': [('startnode', 12), ('store2', 6), ('store10', 5)],
+            'store8': [('store9', 15), ('store5', 15), ('store6', 16), ('store1', 8)],
+            'store9': [('store8', 15), ('startnode', 10), ('store5', 9), ('store6', 16),('store10', 5), ('store11', 7)],
+            'store10': [('store9', 5), ('store7', 5), ('store2', 6)],
+            'store11': [('store5', 3), ('startnode', 8), ('store9', 7)]}
+
+    originNode = 0
+    nextNode = 1
+    nodeOrder = []
+    totalCost = 0
+    
+    for s in range(1,len(shopsToVisit)):
+        dijkstra(adj, shopsToVisit[originNode], shopsToVisit[nextNode], nodeOrder)
+        
+        if nextNode < len(shopsToVisit):
+            originNode += 1
+            nextNode += 1
+    print(nodeOrder)
+    townMap(shopsToVisit, whereToGetItem, recipe, ingredientsList, recipeIngredients)
+
+def ascendingBubbleSort(unsortedList):
+    length = len(unsortedList) - 1
+    element = 0
+    while element < length:
+        if unsortedList[element] > unsortedList[element + 1]:
+            hold = unsortedList[element + 1]
+            unsortedList[element + 1] = unsortedList[element]
+            unsortedList[element] = hold
+            element = 0
+        else:
+            element = element + 1
+    return (unsortedList)
+
+def descendingBubbleSort(unsortedList):
+    length = len(unsortedList) - 1
+    element = 0
+    while element < length:
+        if unsortedList[element] < unsortedList[element + 1]:
+            hold = unsortedList[element + 1]
+            unsortedList[element + 1] = unsortedList[element]
+            unsortedList[element] = hold
+            element = 0
+        else:
+            element = element + 1
+    return((unsortedList))
+
+def ascendingQuickSort(unsortedList):
+    less = []
+    equal = []
+    greater = []
+
+    if len(unsortedList) > 1:
+        pivot = unsortedList[0]
+        for x in unsortedList:
+            if x < pivot:
+                less.append(x)
+            if x == pivot:
+                equal.append(x)
+            if x > pivot:
+                greater.append(x)
+        return ascendingQuickSort(less)+equal+ascendingQuickSort(greater)
+    
+    else:  
+        return unsortedList
+
+def descendingQuickSort(unsortedList):
+    less = []
+    equal = []
+    greater = []
+
+    if len(unsortedList) > 1:
+        pivot = unsortedList[0]
+        for x in unsortedList:
+            if x > pivot:
+                less.append(x)
+            if x == pivot:
+                equal.append(x)
+            if x < pivot:
+                greater.append(x)
+        return ascendingQuickSort(less)+equal+ascendingQuickSort(greater)
+    
+    else:  
+        return unsortedList
 
 
 def mainMenu():
@@ -180,7 +311,7 @@ def optionsScreen():
         pygame.display.update()
 
 def initTownMap(recipe):
-    for i in range(1,10):
+    for i in range(1,12):
         storeNumber = 'store%d.csv' % i
         with open('items.csv','r') as csvinput:
             with open(storeNumber, 'w') as csvoutput: # this section of code creates random prices for all items in the item database and creates a new file with these values for each store
@@ -217,7 +348,7 @@ def initTownMap(recipe):
     shopsToVisit = []
 
     for ingredients in ingredientsList:
-        for i in range(1,10):
+        for i in range(1,12):
             storeNumber = 'store%d.csv' % i
             with open(storeNumber, 'r') as csvinput:
                 reader = csv.reader(csvinput)
@@ -234,20 +365,18 @@ def initTownMap(recipe):
         if cheapestStore not in shopsToVisit:
             shopsToVisit.append(cheapestStore) # this list tells the program which stores it needs to visit, hence ignoring unneeded stores
 
-    townMap(shopsToVisit, whereToGetItem, recipe)
+    main(shopsToVisit, whereToGetItem, recipe, ingredientsList, recipeIngredients)
 
 
-def townMap(recipe, shopsToVisit, whereToGetItem):
+def townMap(recipe, nodeOrder, whereToGetItem, ingredientsList, recipeIngredients):
 
     pygame.display.set_caption("MASTERCHEF VRBH - SIMULATION")
-    
     TREES = 0
     ROADS = 1
     GRASS = 2
     HOUSE = 3
-    ENDNODE = 5
     STARTNODE = 5
-    for x in range(1, 10):
+    for x in range(1, 12):
         globals()['store%s' % x] = 4
         
     tiles = {
@@ -256,7 +385,6 @@ def townMap(recipe, shopsToVisit, whereToGetItem):
                 GRASS : pygame.image.load('grass.png'),
                 HOUSE : pygame.image.load('house.png'),
                 STARTNODE : pygame.image.load('startnode.png'),
-                ENDNODE : pygame.image.load('endnode.png'),
                 store1 : pygame.image.load('shops.png'),
                 store2 : pygame.image.load('shops.png'),
                 store3 : pygame.image.load('shops.png'),
@@ -265,25 +393,27 @@ def townMap(recipe, shopsToVisit, whereToGetItem):
                 store6 : pygame.image.load('shops.png'),
                 store7 : pygame.image.load('shops.png'),
                 store8 : pygame.image.load('shops.png'),
-                store9 : pygame.image.load('shops.png') 
+                store9 : pygame.image.load('shops.png'),
+                store10 : pygame.image.load('shops.png'),
+                store11 : pygame.image.load('shops.png')
             }
 
     tileMap = [
                 [ TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES ],
                 [ TREES, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, TREES ],
-                [ TREES, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, TREES, TREES, ENDNODE, GRASS, GRASS, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, TREES, TREES, TREES, GRASS, GRASS, GRASS, GRASS, TREES ],
                 [ TREES, GRASS, GRASS, store7, GRASS, HOUSE, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, TREES, TREES, ROADS, ROADS, ROADS, store1, GRASS, TREES ],
                 [ TREES, GRASS, TREES, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, store2, GRASS, GRASS, TREES, TREES, ROADS, GRASS, TREES, TREES, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, TREES, GRASS, GRASS, TREES, ROADS, TREES, TREES, store8, TREES, TREES, ROADS, HOUSE, TREES, TREES, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, TREES, GRASS, GRASS, TREES, ROADS, TREES, TREES, ROADS, ROADS, ROADS, ROADS, GRASS, TREES, TREES, GRASS, TREES ],
-                [ TREES, GRASS, HOUSE, ROADS, TREES, GRASS, GRASS, HOUSE, ROADS, TREES, TREES, HOUSE, GRASS, GRASS, ROADS, GRASS, store3, GRASS, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, TREES, GRASS, GRASS, TREES, ROADS, GRASS, GRASS, GRASS, GRASS, GRASS, ROADS, GRASS, ROADS, GRASS, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, HOUSE, GRASS, GRASS, TREES, ROADS, GRASS, GRASS, GRASS, GRASS, GRASS, ROADS, GRASS, ROADS, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, ROADS, GRASS, TREES, ROADS, TREES, TREES, store8, TREES, TREES, ROADS, HOUSE, TREES, TREES, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, ROADS, store10, TREES, ROADS, TREES, TREES, ROADS, ROADS, ROADS, ROADS, GRASS, TREES, TREES, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, ROADS, GRASS, HOUSE, ROADS, TREES, TREES, HOUSE, GRASS, GRASS, ROADS, GRASS, store3, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, ROADS, GRASS, TREES, ROADS, GRASS, GRASS, GRASS, GRASS, GRASS, ROADS, GRASS, ROADS, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, HOUSE, ROADS, ROADS, TREES, ROADS, GRASS, GRASS, GRASS, GRASS, GRASS, ROADS, GRASS, ROADS, GRASS, GRASS, TREES ],
                 [ TREES, GRASS, TREES, ROADS, TREES, TREES, store9, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, ROADS, HOUSE, GRASS, TREES ],
                 [ TREES, GRASS, HOUSE, ROADS, TREES, TREES, TREES, ROADS, GRASS, HOUSE, GRASS, ROADS, GRASS, HOUSE, ROADS, GRASS, GRASS, GRASS, GRASS, TREES ],
                 [ TREES, GRASS, TREES, ROADS, TREES, TREES, TREES, ROADS, TREES, TREES, TREES, ROADS, GRASS, TREES, ROADS, GRASS, GRASS, GRASS, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, TREES, TREES, TREES, ROADS, TREES, TREES, TREES, ROADS, GRASS, TREES, ROADS, HOUSE, GRASS, GRASS, GRASS, TREES ],
-                [ TREES, GRASS, TREES, ROADS, TREES, TREES, TREES, ROADS, TREES, TREES, TREES, ROADS, GRASS, TREES, ROADS, TREES, TREES, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, TREES, TREES, ROADS, TREES, store11, TREES, ROADS, GRASS, TREES, ROADS, HOUSE, GRASS, GRASS, GRASS, TREES ],
+                [ TREES, GRASS, TREES, ROADS, TREES, TREES, TREES, ROADS, ROADS, ROADS, ROADS, ROADS, GRASS, TREES, ROADS, TREES, TREES, GRASS, GRASS, TREES ],
                 [ TREES, GRASS, store4, ROADS, ROADS, ROADS, ROADS, ROADS, TREES, TREES, TREES, store5, GRASS, HOUSE, ROADS, TREES, TREES, GRASS, GRASS, TREES ],
                 [ TREES, GRASS, GRASS, STARTNODE, HOUSE, GRASS, HOUSE, GRASS, TREES, TREES, TREES, GRASS, GRASS, GRASS, ROADS, ROADS, ROADS, store6, GRASS, TREES ],
                 [ TREES, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, GRASS, TREES ],
@@ -291,12 +421,21 @@ def townMap(recipe, shopsToVisit, whereToGetItem):
                 [ TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES, TREES ]
               ]
 
+    chef = pygame.image.load('chef.png').convert_alpha()
+    for i in range(len(tileMap)):
+        part = tileMap[i]
+        for j in range(len(part)):
+            if part[j] == nodeOrder[0]:
+                playerPos = [i, j]
+    return None
     tileSize = 30
     mapWidth = 20
     mapHeight = 20
     displayMap = pygame.display.set_mode((800, 600))
     back = pygbutton.PygButton((0, 570, 70, 30), "Back")
     exitgame = pygbutton.PygButton((530, 570, 70, 30), "Exit")
+    pygame.draw.rect(screen, white, (600,0, 200, 600))
+    pygame.draw.rect(screen, black, (600,0, 5, 600))
     
     while True:
         for row in range(mapHeight):
@@ -313,14 +452,181 @@ def townMap(recipe, shopsToVisit, whereToGetItem):
                     sys.exit()
                     
             if 'click' in back.handleEvent(event):
-                optionsScreen()
+                endScreen(ingredientsList, recipeIngredients, whereToGetItem)
 
             if 'click' in exitgame.handleEvent(event):
                 pygame.quit()
                 sys.exit()
+        
                 
         back.draw(screen)
         exitgame.draw(screen)
         pygame.display.update()
 
+    
+    
+def endScreen(ingredientsList, recipeIngredients, whereToGetItem):
+
+    pygame.display.set_caption("MASTERCHEF VRBH - SORTING")
+    unsortedList = []
+    sortType = "Quick Sort"
+    screen = pygame.display.set_mode((800, 600), 0, 32)
+    #Generate font objects as well as initialise and display text
+    font1 = pg.font.SysFont("Calibri", 50, bold=False)
+    font2 = pg.font.SysFont("Calibri", 30, bold=False)
+    font3 = pg.font.SysFont("Calibri", 20, bold=False)
+    font4 = pg.font.SysFont("Calibri", 15, bold=False)
+    stats = font1.render("Stats", 1, black)
+    timeTaken = font2.render("Time Taken: ", 1, black)
+    moneySpent = font2.render("Money Spent: ", 1, black)
+    shopsVisited = font2.render("Shops Visited: ", 1, black)
+    shoppingList = font1.render("Shopping List", 1, black)
+    item = font3.render("Ingredient", 1, black)
+    item1 = font4.render("", 1, black)
+    item2 = font4.render("", 1, black)
+    item3 = font4.render("", 1, black)
+    item4 = font4.render("", 1, black)
+    item5 = font4.render("", 1, black)
+    item6 = font4.render("", 1, black)
+    item7 = font4.render("", 1, black)
+    item8 = font4.render("", 1, black)
+    
+    #Only 1 button needs to be generated
+    exitGame = pygbutton.PygButton((10, 550, 70, 30), "Exit")
+    sortingOptions = pygbutton.PygButton((110, 550, 130, 30), "Quick Sort")
+    ascending1 = pygbutton.PygButton((300, 510, 450, 30), "Ascending")
+    descending1 = pygbutton.PygButton((300, 550, 450, 30), "Descending")
+
+
+
+    #display stuff on the screen and continuously update it
+
+    pygame.draw.rect(screen, white, (0,0, 800, 600))
+    pygame.draw.rect(screen, black, (0, 53, 800, 2))
+    pygame.draw.rect(screen, black, (270, 0, 2, 600))
+    pygame.draw.rect(screen, black, (0, 530, 270, 2))
+    screen.blit(stats, (60, 5))
+    screen.blit(shoppingList, (400, 5))
+    screen.blit(timeTaken, (5, 70))
+    screen.blit(moneySpent, (5, 210))
+    screen.blit(shopsVisited, (5, 350))
+    screen.blit(item, (500, 70))
+ 
+    exitGame.draw(screen)
+    sortingOptions.draw(screen)
+    ascending1.draw(screen)
+    descending1.draw(screen)
+    
+    while True:
+        iterationAsc = 0
+        iterationDesc = 7
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE or event.key == K_q:
+                    pygame.quit() 
+                    sys.exit()
+            if 'click' in exitGame.handleEvent(event):
+                pygame.quit()
+                sys.exit()
+            if 'click' in sortingOptions.handleEvent(event):
+                if sortingOptions.caption == "Quick Sort":
+                    sortingOptions = pygbutton.PygButton((110, 550, 130, 30), "Bubble Sort")
+                    sortType = "Bubble Sort"
+                    sortingOptions.draw(screen)
+                elif sortingOptions.caption == "Bubble Sort":
+                    sortingOptions = pygbutton.PygButton((110, 550, 130, 30), "Quick Sort")
+                    sortType = "Quick Sort"
+                    sortingOptions.draw(screen)
+            if 'click' in ascending1.handleEvent(event):
+                pygame.draw.rect(screen, white, (272,90, 500, 400))
+                unsortedList = ingredientsList 
+                if sortType == "Bubble Sort":
+                    ascendingBubbleSort(unsortedList)
+                    item1 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item2 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item3 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item4 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item5 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item6 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item7 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item8 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    
+                else:
+                    ascendingQuickSort(unsortedList)
+                    item1 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item2 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item3 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item4 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item5 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item6 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item7 = font4.render(unsortedList[iterationAsc], 1, black) 
+                    iterationAsc += 1
+                    item8 = font4.render(unsortedList[iterationAsc], 1, black)
+                
+            if 'click' in descending1.handleEvent(event):
+                pygame.draw.rect(screen, white, (272,90, 500, 400))
+                unsortedList = ingredientsList
+                if sortType == "Bubble Sort":
+                    descendingBubbleSort(unsortedList)
+                    item1 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item2 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item3 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item4 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item5 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item6 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item7 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item8 = font4.render(unsortedList[iterationDesc], 1, black)
+                else:
+                    descendingQuickSort(unsortedList)
+                    item1 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item2 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item3 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item4 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item5 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item6 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item7 = font4.render(unsortedList[iterationDesc], 1, black) 
+                    iterationDesc -= 1
+                    item8 = font4.render(unsortedList[iterationDesc], 1, black)
+                    
+            pygame.draw.rect(screen, white, (272,90, 500, 400))
+            screen.blit(item1, (500,100))
+            screen.blit(item2, (500,140))
+            screen.blit(item3, (500,180))
+            screen.blit(item4, (500,220))
+            screen.blit(item5, (500,260))
+            screen.blit(item6, (500,300))
+            screen.blit(item7, (500,340))
+            screen.blit(item8, (500,380))
+
+            
+            pygame.display.update()
 mainMenu()
